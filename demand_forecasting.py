@@ -1,4 +1,3 @@
-
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
@@ -12,13 +11,13 @@ class DemandForecaster:
             self.model = RandomForestRegressor(n_estimators=100, random_state=42)
             self.scaler = StandardScaler()
 
-    def train(self, df, feature_cols, target_col):
-        X = df[feature_cols]
-        y = df[target_col]
+    def train(self, booking_history: pd.DataFrame, feature_cols: list, target_col: str):
+        X = booking_history[feature_cols]
+        y = booking_history[target_col]
         X_scaled = self.scaler.fit_transform(X)
         self.model.fit(X_scaled, y)
-        joblib.dump((self.model, self.scaler), "demand_model.pkl")
+        joblib.dump((self.model, self.scaler), "demand_forecaster.pkl")
 
-    def predict(self, df):
-        X_scaled = self.scaler.transform(df)
-        return self.model.predict(X_scaled)
+    def predict(self, upcoming_features: pd.DataFrame) -> pd.Series:
+        X_scaled = self.scaler.transform(upcoming_features)
+        return pd.Series(self.model.predict(X_scaled), index=upcoming_features.index)

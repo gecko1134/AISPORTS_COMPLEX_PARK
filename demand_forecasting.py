@@ -1,28 +1,24 @@
-import streamlit as st
+
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestRegressor
+import joblib
 
 class DemandForecaster:
-    def __init__(self):
-        self.model_name = "Demo Forecaster"
+    def __init__(self, model_path=None):
+        if model_path:
+            self.model, self.scaler = joblib.load(model_path)
+        else:
+            self.model = RandomForestRegressor(n_estimators=100, random_state=42)
+            self.scaler = StandardScaler()
+
+    def train(self, df, feature_cols, target_col):
+        X = df[feature_cols]
+        y = df[target_col]
+        X_scaled = self.scaler.fit_transform(X)
+        self.model.fit(X_scaled, y)
+        joblib.dump((self.model, self.scaler), "demand_model.pkl")
 
     def predict(self, df):
-        df['predicted_users'] = df['hour'] * 5 + 100  # Fake formula
-        return df
-
-def run():
-    st.title("Demand Forecast")
-    st.write("Upload a CSV file with an 'hour' column (0–23) to simulate forecasting.")
-
-    uploaded_file = st.file_uploader("Upload CSV", type="csv")
-    if uploaded_file:
-        df = pd.read_csv(uploaded_file)
-        if 'hour' not in df.columns:
-            st.error("CSV must contain 'hour' column.")
-            return
-        model = DemandForecaster()
-        result = model.predict(df)
-        st.success("Forecast complete.")
-        st.dataframe(result)
-        st.line_chart(result.set_index('hour')['predicted_users'])
-    else:
-        st.info("Upload a CSV with hourly data.")
+        X_scaled = self.scaler.transform(df)
+        return self.model.predict(X_scaled)

@@ -1,7 +1,5 @@
 streamlit
+sqlalchemy
+psycopg2-binary
 pandas
-numpy
-scikit-learn
-matplotlib
-seaborn
-textblob
+altair

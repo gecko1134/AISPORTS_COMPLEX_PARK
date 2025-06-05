@@ -1,59 +1,34 @@
-# 🚀 Deployment Guide: SPORTAI Suite
+# Deployment Guide
 
-## 🔁 1. Push to GitHub
+## 🧱 Requirements
 
-### ✅ Create Repo
-- Go to https://github.com/new
-- Name: `SPORTAI_Suite`
-- No README or .gitignore
-- Create repository
+- PostgreSQL host (e.g., Supabase, Neon, Render)
+- Python 3.10+
+- Streamlit
 
-### 💻 Push Locally
-```bash
-git init
-git remote add origin https://github.com/YOUR_USERNAME/SPORTAI_Suite.git
-git add .
-git commit -m "Initial deployable version"
-git branch -M main
-git push -u origin main
-```
+## 🛠 Cloud Deployment Options
 
----
+### 1. Render (Recommended for Streamlit + PostgreSQL)
+- Create new PostgreSQL instance
+- Create new Web Service with:
+  - Build Command: `pip install -r requirements.txt`
+  - Start Command: `streamlit run dashboard.py`
 
-## 🌐 2. Deploy to Streamlit Cloud
+### 2. Railway.app
+- Deploy via GitHub repo
+- Add `DATABASE_URL` as an environment variable
+- Configure to run `streamlit run admin.py`
 
-### 🪄 Launch Your App
-1. Go to https://streamlit.io/cloud
-2. Click "New App" and select your `SPORTAI_Suite` repo
-3. App file: `run_sportai.py`
-4. Environment: auto-reads from `requirements.txt`
-5. Click **Deploy**
+### 3. Supabase (PostgreSQL only)
+- Provision a DB
+- Copy connection string as `DATABASE_URL`
+- Use for local or cloud Streamlit app
 
----
+## ✅ GitHub Actions CI
 
-## 🔐 3. Optional: Add API Keys
+Create a repository secret:
+- `DATABASE_URL` = your PostgreSQL URL
 
-Create a file `.streamlit/secrets.toml` with:
-```toml
-openai_key = "sk-..."
-mapbox_token = "..."
-email_password = "..."
-```
+This runs a DB connectivity test on each push to `main`.
 
 ---
-
-## 🧪 4. Run Locally (Dev Mode)
-
-Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-Then launch:
-```bash
-python run_sportai.py
-```
-Or directly:
-```bash
-streamlit run main_app.py
-```
